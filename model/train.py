@@ -8,7 +8,8 @@ import numpy as np
 from net import CNN
 from evaluate import evaluate
 
-data_dir = "/Users/yang/Desktop/Orientation-Adjust-Tool/imgs"
+# data_dir = "/Users/yang/Desktop/Orientation-Adjust-Tool/imgs"
+data_dir = "/Users/yang/Desktop/Medical Image Project/Orientation-Adjust-Tool/imgs"
 BEST_MODEL_PATH = './model_best.pth'
 
 # data augmentation
@@ -24,7 +25,9 @@ image_datasets = {
     for x in ['train_data_LGE', 'valid_data_LGE', 'test_data_LGE']
 }
 data_loaders = {
-    x: torch.utils.data.DataLoader(image_datasets[x], batch_size=8, shuffle=True, num_workers=2)
+    x: torch.utils.data.DataLoader(image_datasets[x], batch_size=8, shuffle=True
+                                #    , num_workers=2
+                                   )
     for x in ['train_data_LGE', 'valid_data_LGE', 'test_data_LGE']
 }
 
@@ -42,16 +45,19 @@ model.to(device)
 optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 loss = nn.CrossEntropyLoss()
 for epoch in range(num_epochs):
+    # train mode
     model.train()
     train_loss = 0
     for i, (X,y) in enumerate(train_iter):
-        optimizer.zero_grad()
         X, y = X.to(device), y.to(device)
         y_hat = model(X)
-        l = loss(y_hat, y)
+        l = loss(y_hat, torch.nn.functional.one_hot(y).float())
+        # update param
         l.backward()
         optimizer.step()
         train_loss += l
+        # Sets the gradients of all optimized torch.Tensor s to zero. 
+        optimizer.zero_grad()
     train_loss /= len(train_iter)
     val_loss = evaluate(model, valid_iter, device)
     if val_loss < best_loss:
