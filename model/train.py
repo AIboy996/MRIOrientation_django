@@ -24,6 +24,7 @@ image_datasets = {
     x: torchvision.datasets.ImageFolder(os.path.join(data_dir, x), data_transformer)
     for x in ['train_data_LGE', 'valid_data_LGE', 'test_data_LGE']
 }
+
 data_loaders = {
     x: torch.utils.data.DataLoader(image_datasets[x], batch_size=8, shuffle=True
                                 #    , num_workers=2
@@ -50,8 +51,8 @@ for epoch in range(num_epochs):
     train_loss = 0
     for i, (X,y) in enumerate(train_iter):
         X, y = X.to(device), y.to(device)
-        y_hat = model(X)
-        l = loss(y_hat, torch.nn.functional.one_hot(y).float())
+        y_hat = model(X).to(device)
+        l = loss(y_hat, y)
         # update param
         l.backward()
         optimizer.step()
