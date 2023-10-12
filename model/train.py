@@ -8,8 +8,8 @@ import numpy as np
 from net import CNN
 from evaluate import evaluate
 
-# data_dir = "/Users/yang/Desktop/Orientation-Adjust-Tool/imgs"
-data_dir = "/Users/yang/Desktop/Medical Image Project/Orientation-Adjust-Tool/imgs"
+data_dir = r"C:\Users\yangz\Desktop\MRIOrientation\imgs"
+# data_dir = "/Users/yang/Desktop/Medical Image Project/Orientation-Adjust-Tool/imgs"
 BEST_MODEL_PATH = './model_best.pth'
 
 # data augmentation
@@ -36,31 +36,39 @@ valid_iter = data_loaders['valid_data_LGE']
 test_iter = data_loaders['test_data_LGE']
 
 lr = 0.01
-num_epochs = 20
-device = torch.device('mps')
-best_loss = np.inf
+num_epochs = 40
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('mps')
 model = CNN()
-
 model.to(device)
+best_loss = np.inf
 optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 loss = nn.CrossEntropyLoss()
+# As stated in the torch.nn.CrossEntropyLoss() doc:
+# This criterion combines nn.LogSoftmax() and nn.NLLLoss() in one single class.
+# Therefore, you should not use softmax before.
+
 for epoch in range(num_epochs):
     # train mode
     model.train()
     train_loss = 0
     for i, (X,y) in enumerate(train_iter):
+        # Sets the gradients of all optimized torch.Tensor s to zero. 
+        optimizer.zero_grad()
         X, y = X.to(device), y.to(device)
         y_hat = model(X)
-        l = loss(y_hat, torch.nn.functional.one_hot(y).float())
+        l = loss(y_hat, y)
         # update param
         l.backward()
         optimizer.step()
         train_loss += l
-        # Sets the gradients of all optimized torch.Tensor s to zero. 
-        optimizer.zero_grad()
     train_loss /= len(train_iter)
     val_loss = evaluate(model, valid_iter, device)
     if val_loss < best_loss:
         best_loss = val_loss
         torch.save(model, BEST_MODEL_PATH)
-    print(f'{epoch = }, {train_loss = } {val_loss = }')
+    print(f'epoch = {epoch+1}, {float(train_loss) = } {float(val_loss) = }')
+print(f'{float(best_loss) = }')
+
+best_model = torch.load(BEST_MODEL_PATH)
+test_loss = evaluate(model, test_iter, device)
+print(f'test loss on best model is {test_loss}')

@@ -13,6 +13,5 @@ def evaluate(model, dataset, device):
             X, y = X.to(device), y.to(device)
             y_hat = model(X)
             l = loss(y_hat, y)
-            l.backward()
             train_loss += l
     return train_loss/num_val_batches
