@@ -24,6 +24,7 @@ image_datasets = {
     x: torchvision.datasets.ImageFolder(os.path.join(data_dir, x), data_transformer)
     for x in ['train_data_LGE', 'valid_data_LGE', 'test_data_LGE']
 }
+
 data_loaders = {
     x: torch.utils.data.DataLoader(image_datasets[x], batch_size=8, shuffle=True
                                 #    , num_workers=2
