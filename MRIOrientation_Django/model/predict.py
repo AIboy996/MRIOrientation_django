@@ -27,12 +27,12 @@ def pred(img):
 
 if __name__ == "__main__": # in Django is MRIOrientation_Django.model.predict
     print('patient1_LGE.nii.gz:')
-    itk_img = SimpleITK.ReadImage(r'C:\Users\yangz\Desktop\MRIOrientation_django\data\patient1_LGE.nii.gz')
+    itk_img = SimpleITK.ReadImage('./data/patient1_LGE.nii.gz')
     img = SimpleITK.GetArrayFromImage(itk_img)
     for slice in img:
         print(pred(slice))
 
     print('sample.png:')
-    img = Image.open(r'C:\Users\yangz\Desktop\MRIOrientation_django\data\sample.png').convert('L')
+    img = Image.open('./data/sample.png').convert('L')
     img = np.array(img)
     print(pred(img))

@@ -10,9 +10,8 @@ from .net import CNN
 from .evaluate import evaluate
 
 
-data_dir = r"C:\Users\yangz\Desktop\MRIOrientation\imgs"
-# data_dir = "/Users/yang/Desktop/Medical Image Project/Orientation-Adjust-Tool/imgs"
-BEST_MODEL_PATH = r'C:\Users\yangz\Desktop\MRIOrientation_django\MRIOrientation_django\model_best.pth'
+data_dir = "../imgs"
+BEST_MODEL_PATH = './MRIOrientation_django/model_best.pth'
 
 # data augmentation
 data_transformer = transforms.Compose([
