@@ -5,6 +5,7 @@ import io
 import urllib, base64
 import tempfile
 from .transform import ori
+from .model.predict import pred
 
 def read_ITK(file_name):
     itk_img = SimpleITK.ReadImage(file_name)
@@ -36,6 +37,5 @@ def loadimage(request):
             file_name = f.name
             img_slices = read_ITK(file_name)
         uri_l = tobase64(img_slices)
-        # TODO add predict algorithm
-        uri_l_adjusted =  tobase64([ori(slice, '100') for slice in img_slices])
+        uri_l_adjusted =  tobase64([ori(slice, pred(slice)) for slice in img_slices])
     return render(request, 'index.html', locals())
