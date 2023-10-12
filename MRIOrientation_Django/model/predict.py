@@ -22,6 +22,7 @@ def pred(img):
     # pred label
     pred = softmax(outputs, dim=1).argmax(axis=1)
     label = int(pred[0])
+    print(f'pred label: {label}')
     return label
 
 

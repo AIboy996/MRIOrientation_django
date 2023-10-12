@@ -123,10 +123,29 @@
                 </div>
             </div>
             <div class="col-2">
-                <button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" 
-                    data-bs-content='adsadasd'>
+                <button class="btn btn-secondary" data-bs-toggle="popover"  title="Prediction Meaning" data-bs-placement="bottom" data-bs-content-id="popover-content" tabindex="0" role="button">
                     MRI Orientation
-                  </button>
+                </button>
+                  
+                  <div id="popover-content" class="d-none">
+                    0 means <strong>original</strong><br>
+                    1 means <strong>fliplr</strong><br>
+                    2 means <strong>flipud</strong><br>
+                    3 means <strong>fliplr+flipud</strong><br>
+                    4 means <strong>transpose</strong><br>
+                    5 means <strong>flipud+transpose</strong><br>
+                    6 means <strong>fliplr+transpose</strong><br>
+                    7 means <strong>fliplr+flipud+transpose</strong><br>
+                    <br>
+                    flipup means <strong>flip up and down</strong><br>
+                    fliplr means <strong>flip left and right</strong><br>
+                  </div>
+                  <br><br>
+                  {% for ori in orientations %}
+                  <li>
+                    {{ ori }}
+                  </li>
+                  {% endfor %}
             </div>
             <div class="col">
                 <!-- Slideshow container -->
@@ -158,8 +177,8 @@
                 <form action="/loadimage/" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="formFile" class="form-label">Select a file(*.nii or *.nii.gz)</label>
-                        <input class="form-control" type="file" id="formFile" accept=".nii, .gz" name="nii_image">
+                        <label for="formFile" class="form-label">Select a file(.nii, .gz, .jpg or .png)</label>
+                        <input class="form-control" type="file" id="formFile" accept=".nii, .gz, .png, .jpg" name="nii_image">
                     </div>
                     <button type="submit" class="btn btn-secondary">Load Image</button>
                 </form>
@@ -169,8 +188,17 @@
 
 </body>
 <script>
-    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
-    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+    const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    list.map((el) => {
+        let opts = {
+            animation: false,
+        }
+        if (el.hasAttribute('data-bs-content-id')) {
+            opts.content = document.getElementById(el.getAttribute('data-bs-content-id')).innerHTML;
+            opts.html = true;
+        }
+        new bootstrap.Popover(el, opts);
+    })
     let slideIndex = 1;
     showSlides(slideIndex);
 
