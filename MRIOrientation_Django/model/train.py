@@ -68,6 +68,6 @@ if __name__ == "__main__":
         print(f'epoch={epoch+1}, train_loss={float(train_loss):.3f} val_loss={float(val_loss):.3f} val_acc={float(val_acc):.3f}')
     print(f'best_loss={float(best_loss):.3f} best_acc={float(best_acc):.3f}')
 
-    best_model = torch.load(BEST_MODEL_PATH)
+    best_model = torch.load(BEST_MODEL_PATH, map_location=device)
     test_loss, test_acc = evaluate(model, test_iter, device)
     print(f'test loss on best model is {float(test_loss):.3f}, acc is {float(test_acc):.3f}')

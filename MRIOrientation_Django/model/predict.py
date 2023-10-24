@@ -8,8 +8,8 @@ from torch.nn.functional import softmax
 from .net import CNN
 from .train import BEST_MODEL_PATH
 
-model = torch.load(BEST_MODEL_PATH)
-device = torch.device('cuda')
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('mps')
+model = torch.load(BEST_MODEL_PATH, map_location=device)
 model.to(device)
 
 def pred(img):
