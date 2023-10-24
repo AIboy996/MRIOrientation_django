@@ -30,7 +30,7 @@ if __name__ == "__main__":
     }
 
     data_loaders = {
-        x: torch.utils.data.DataLoader(image_datasets[x], batch_size=8, shuffle=True, num_workers=2)
+        x: torch.utils.data.DataLoader(image_datasets[x], batch_size=16, shuffle=True, num_workers=2)
         for x in ['train_data_LGE', 'valid_data_LGE', 'test_data_LGE']
     }
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     valid_iter = data_loaders['valid_data_LGE']
     test_iter = data_loaders['test_data_LGE']
     lr = 0.005
-    num_epochs = 100
+    num_epochs = 30
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('mps')
     model = CNN()
     model.to(device)
@@ -60,13 +60,14 @@ if __name__ == "__main__":
             optimizer.step()
             train_loss += l
         train_loss /= len(train_iter)
-        val_loss = evaluate(model, valid_iter, device)
+        val_loss, val_acc = evaluate(model, valid_iter, device)
         if val_loss < best_loss:
             best_loss = val_loss
+            best_acc = val_acc
             torch.save(model, BEST_MODEL_PATH)
-        print(f'epoch = {epoch+1}, {float(train_loss) = } {float(val_loss) = }')
-    print(f'{float(best_loss) = }')
+        print(f'epoch={epoch+1}, train_loss={float(train_loss):.3f} val_loss={float(val_loss):.3f} val_acc={float(val_acc):.3f}')
+    print(f'best_loss={float(best_loss):.3f} best_acc={float(best_acc):.3f}')
 
     best_model = torch.load(BEST_MODEL_PATH)
-    test_loss = evaluate(model, test_iter, device)
-    print(f'test loss on best model is {test_loss}')
+    test_loss, test_acc = evaluate(model, test_iter, device)
+    print(f'test loss on best model is {float(test_loss):.3f}, acc is {float(test_acc):.3f}')
